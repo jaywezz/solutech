@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:solutench/features/reports/screens/reports_screen.dart';
+import 'package:solutench/features/visits/models/visits_model.dart';
+import 'package:solutench/features/visits/screens/visits_form.dart';
+import 'package:solutench/features/visits/screens/visits_screen.dart';
 import 'package:solutench/splash_screen.dart';
 
 
 
 final rootNavigatorKey = GlobalKey<NavigatorState>();
-enum AppRoutes{
-  confirmStockLift,
-}
+
 final goRouter = GoRouter(
   redirect: (BuildContext context, GoRouterState state) async{
     // Replace this method depends on how you are managing your user's
@@ -28,11 +30,38 @@ final goRouter = GoRouter(
   routes: [
     GoRoute(
       path: "/splash",
-      name: SplashScreenPage.routeName,
+      name: SplashScreen.routeName,
       pageBuilder: (context, state) =>  const NoTransitionPage(
-        child:SplashScreenPage(),
+        child:SplashScreen(),
       ),
     ),
+    
+    GoRoute(
+      path: "/reports",
+      name: ReportsScreen.routeName,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: ReportsScreen(),
+      ),
+      routes: [
+        GoRoute(
+          path: "/visits",
+          name: VisitsScreen.routeName,
+          pageBuilder: (context, state) => const NoTransitionPage(
+            child: VisitsScreen(),
+          ),
+          routes: [
+            GoRoute(
+              path: "form",
+              name: VisitsForm.routeName,
+              pageBuilder: (context, state) =>  NoTransitionPage(
+                child: VisitsForm(visit: state.extra as Visits),
+              )
+            )
+          ]
+        ),
+      ]
+    ),
+    
     
 
   ],

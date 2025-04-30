@@ -1,100 +1,76 @@
-import 'dart:async';
-
-
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:solutench/features/reports/screens/reports_screen.dart';
 
-
-
-class SplashScreenPage extends ConsumerStatefulWidget {
-  static const routeName = 'splash_screen_page';
-  const SplashScreenPage({super.key});
+class SplashScreen extends StatefulWidget {
+  static const routeName = "/splash";
+  const SplashScreen({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() =>
-      SplashScreenPageState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class SplashScreenPageState extends ConsumerState<SplashScreenPage>
-    with SingleTickerProviderStateMixin {
-  // bool isLoggedin = false;
-  late Animation<double> animation;
-  late AnimationController controller;
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+
   @override
   void initState() {
-   
-    controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..forward();
-    animation = CurvedAnimation(parent: controller, curve: Curves.easeInExpo);
     super.initState();
-    //Get.find<ProductCategoryController>().getProductCategories();
-    // _loadResource();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeIn,
+      ),
+    );
+
+    _controller.forward();
+
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        context.goNamed(ReportsScreen.routeName);
+      }
+    });
   }
 
   @override
-  Future<void> didChangeDependencies() async {
-    super.didChangeDependencies();
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Logger().i(MediaQuery.of(context).size.width);
     return Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
-              // color: Colors.white,
-              image: DecorationImage(
-                  image: AssetImage(
-                    'assets/bg/Welcomebackground.png',
-                  ),
-                  fit: BoxFit.cover),
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Center(
-                    child: Container(
-                      color: Colors.transparent,
-                      // height: 200.h,
-                      // width: 300.h,
-                      child: ScaleTransition(
-                        scale: animation,
-                        child: const Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                           
-                            Text("Solutech",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                            ),
-                           
-                          ],
-                        ),
-                      ),
-                       
-                    ),
-                  ),
-                ],
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      body: Center(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/logo.png',
+                width: 150,
+                height: 150,
               ),
-            )));
-    // Image(image: AssetImage('assets/logos/Fresh Life Logo_Horizontal.png'))
+              const SizedBox(height: 24),
+              Text(
+                'Solutench',
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
-
-  
-
-
-
-// Future<void> _loadResource() async {
-//   Get.find<AuthController>().userLoggedIn();
-// }
-}
+} 
